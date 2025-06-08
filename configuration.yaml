@@ -1,0 +1,39 @@
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+rest_command:
+  pvoutput_extended_upload:
+    url: 'https://pvoutput.org/service/r2/addstatus.jsp'
+    method: POST
+    headers:
+      X-Pvoutput-Apikey: "{{ states('input_text.pvoutput_api_key') }}"
+      X-Pvoutput-SystemId: "{{ states('input_text.pvoutput_system_id') }}"
+      Content-Type: 'application/x-www-form-urlencoded'
+    payload: "d={{ now().strftime('%Y%m%d') }}&t={{ now().strftime('%H:%M') }}&v2={{ states('sensor.sunpower_system_sentity_panel_power_real_time') | float(0) | int }}&v4={{ states('sensor.sunpower_reserve_consumption_power_real_time') | float(0) | int }}&v5={{ states('sensor.home_outside_temperature') | float(0) | int }}&v7={{ states('sensor.sunpower_reserve_storage_power_real_time') | float(0) | int }}&v8={{ states('sensor.sunpower_reserve_storage_charge') | float(0) | int }}&v9={{ states('sensor.sunpower_battery_energy_today') | float(0) * 1000 | int }}"
+# v1 & v3 doesn't work properly  payload: "d={{ now().strftime('%Y%m%d') }}&t={{ now().strftime('%H:%M') }}&v1={{ states('sensor.sunpower_system_entity_panels_generation') | float(0) | int }}&v2={{ states('sensor.sunpower_system_entity_panel_power_real_time') | float(0) | int }}&v3={{ states('sensor.sunpower_reserve_total_consumption') | float(0) * 1000 | int }}&v4={{ states('sensor.sunpower_reserve_consumption_power_real_time') | float(0) | int }}&v5={{ states('sensor.home_outside_temperature') | float(0) | int }}&v7={{ states('sensor.sunpower_reserve_storage_power_real_time') | float(0) | int }}&v8={{ states('sensor.sunpower_reserve_storage_charge') | float(0) | int }}&v9={{ states('sensor.sunpower_battery_energy_today') | float(0) * 1000 | int }}&c1=1"
+
+# Utility sensor for tracking upload status
+sensor:
+  - platform: template
+    sensors:
+      pvoutput_last_upload:
+        friendly_name: "PVOutput Last Upload"
+        value_template: "{{ now().strftime('%H:%M:%S') }}"
+
+# Input helpers for configuration
+input_text:
+  pvoutput_api_key:
+    name: "PVOutput API Key"
+    max: 40
+  pvoutput_system_id:
+    name: "PVOutput System ID"
+    max: 10

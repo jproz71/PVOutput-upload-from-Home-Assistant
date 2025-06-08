@@ -1,0 +1,15 @@
+# SunPower Reserve to PVOutput.org Upload Configuration
+#automation:
+  - id: pvoutput_extended_upload_sunpower
+    alias: "Upload Extended SunPower Data to PVOutput"
+    description: "Uploads additional SunPower Reserve data including battery info"
+    trigger:
+      - platform: time_pattern
+        minutes: "/5"  # Every 5 minutes for extended data
+#    condition:
+#      - condition: sun
+#        after: sunrise
+#        before: sunset
+    action:
+      - service: rest_command.pvoutput_extended_upload
+        data: {}
