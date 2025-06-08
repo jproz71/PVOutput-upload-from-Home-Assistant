@@ -198,16 +198,6 @@ trigger:
     minutes: "/10"  # Every 10 minutes instead of 5
 ```
 
-### Add Voltage Data
-
-To include DC voltage data, add this parameter to the payload:
-
-```yaml
-&v6={{ states('sensor.sunpower_dc_voltage_average') | float(0) * 10 | int }}
-```
-
-Note: PVOutput expects voltage × 10 as an integer.
-
 ### Conditional Uploads
 
 To only upload during daylight hours, add this condition:
